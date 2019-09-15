@@ -1,5 +1,6 @@
 package com.example.jdcunha_ridebook;
 
+import java.text.SimpleDateFormat;
 import java.util.Date;
 
 public class Ride {
@@ -63,5 +64,10 @@ public class Ride {
 
     public String getComment() {
         return this.comment;
+    }
+
+    public String getRideSummary() {
+        SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd \u2022 hh:mm aa");
+        return formatter.format(getDate()) + " \u2022 " + getDistance() + " km";
     }
 }

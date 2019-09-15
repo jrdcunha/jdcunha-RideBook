@@ -26,14 +26,20 @@ public class RideListActivity extends AppCompatActivity {
                 1,
                 "test"
         ));
+        rideList.add(new Ride(
+                new Date(),
+                2.0,
+                2.0,
+                2,
+                "test2"
+        ));
 
         rideListView = (ListView) findViewById(R.id.ride_list);
-        ArrayAdapter arrayAdapter = new ArrayAdapter<Ride>(
+        RideArrayAdapter adapter = new RideArrayAdapter(
                 this,
-                R.layout.activity_listview,
-                R.id.text_view,
+                R.id.ride_summary,
                 rideList
         );
-        rideListView.setAdapter(arrayAdapter);
+        rideListView.setAdapter(adapter);
     }
 }
