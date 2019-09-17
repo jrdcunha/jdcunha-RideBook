@@ -3,6 +3,8 @@ package com.example.jdcunha_ridebook;
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.os.Bundle;
+import android.view.Menu;
+import android.view.MenuInflater;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
 
@@ -41,5 +43,12 @@ public class RideListActivity extends AppCompatActivity {
                 rideList
         );
         rideListView.setAdapter(adapter);
+    }
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        MenuInflater inflater = getMenuInflater();
+        inflater.inflate(R.menu.options_menu, menu);
+        return true;
     }
 }
