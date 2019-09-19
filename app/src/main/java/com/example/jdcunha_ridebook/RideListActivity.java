@@ -7,6 +7,8 @@ import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
+import android.view.View;
+import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
 
@@ -39,12 +41,27 @@ public class RideListActivity extends AppCompatActivity {
         ));
 
         rideListView = (ListView) findViewById(R.id.ride_list);
+
         RideArrayAdapter adapter = new RideArrayAdapter(
                 this,
                 R.id.ride_summary,
                 rideList
         );
+
         rideListView.setAdapter(adapter);
+
+        rideListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                Ride ride = (Ride) parent.getItemAtPosition(position);
+                Intent i = new Intent(RideListActivity.this, ViewEditRideActivity.class);
+
+                i.putExtra("position", position);
+                i.putExtra("ride", ride);
+
+                startActivity(i);
+            }
+        });
     }
 
     @Override

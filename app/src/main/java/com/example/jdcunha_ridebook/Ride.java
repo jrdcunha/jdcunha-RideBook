@@ -1,9 +1,10 @@
 package com.example.jdcunha_ridebook;
 
+import java.io.Serializable;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
-public class Ride {
+public class Ride implements Serializable {
     private Date date;
     private double distance;
     private double averageSpeed;
