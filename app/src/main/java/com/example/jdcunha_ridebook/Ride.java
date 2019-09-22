@@ -68,7 +68,7 @@ public class Ride implements Serializable {
     }
 
     public String getRideSummary() {
-        SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd \u2022 hh:mm aa");
+        SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd \u2022 h:mm aa");
         return formatter.format(getDate()) + " \u2022 " + getDistance() + " km";
     }
 }

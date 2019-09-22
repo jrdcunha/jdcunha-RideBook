@@ -9,7 +9,13 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
-        <activity android:name=".ViewEditRideActivity"></activity>
+        <activity android:name=".ViewEditRideActivity"
+            android:parentActivityName=".RideListActivity">
+            <meta-data android:name="android.support.PARENT_ACTIVITY"
+                android:value=".RideListActivity">
+
+            </meta-data>
+        </activity>
         <activity android:name=".RideListActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />

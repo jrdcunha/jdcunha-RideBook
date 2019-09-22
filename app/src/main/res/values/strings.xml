@@ -4,4 +4,5 @@
     <string name="title_add_ride">Add Ride</string>
     <string name="title_edit_ride">Edit Ride</string>
     <string name="ride_date">Date</string>
+    <string name="ride_time">Start time</string>
 </resources>
