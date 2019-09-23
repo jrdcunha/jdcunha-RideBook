@@ -1,8 +1,13 @@
 <resources>
     <string name="app_name">jdcunha-RideBook</string>
     <string name="button_add">Add</string>
+    <string name="button_save">Save</string>
     <string name="title_add_ride">Add Ride</string>
     <string name="title_edit_ride">Edit Ride</string>
     <string name="ride_date">Date</string>
     <string name="ride_time">Start time</string>
+    <string name="ride_distance">Distance (km)</string>
+    <string name="ride_average_speed">Average speed (km/h)</string>
+    <string name="ride_average_cadence">Average cadence (rpm)</string>
+    <string name="ride_comment">Comment</string>
 </resources>

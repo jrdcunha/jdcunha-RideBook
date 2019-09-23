@@ -2,6 +2,7 @@ package com.example.jdcunha_ridebook;
 
 import androidx.appcompat.app.AppCompatActivity;
 
+import android.app.ActionBar;
 import android.app.DatePickerDialog;
 import android.app.TimePickerDialog;
 import android.content.Intent;
@@ -19,6 +20,10 @@ public class ViewEditRideActivity extends AppCompatActivity implements View.OnCl
 
     private EditText date;
     private EditText time;
+    private EditText distance;
+    private EditText averageSpeed;
+    private EditText averageCadence;
+    private EditText comment;
 
     private DatePickerDialog datePickerDialog;
     private TimePickerDialog timePickerDialog;
@@ -36,12 +41,38 @@ public class ViewEditRideActivity extends AppCompatActivity implements View.OnCl
         dateFormatter = new SimpleDateFormat("yyyy-MM-dd");
         timeFormatter = new SimpleDateFormat("h:mm aa");
 
-        date = (EditText) findViewById(R.id.text_date);
-        time = (EditText) findViewById(R.id.text_time);
+        findViewsById();
+        preparePickers();
 
         date.setOnClickListener(this);
         time.setOnClickListener(this);
 
+        Intent i = getIntent();
+        ride = (Ride) i.getSerializableExtra("ride");
+
+        // if existing ride was clicked, populate fields with its data to be viewed/edited,
+        // otherwise fields will be empty to define a new ride to be added to the list
+        if (ride != null) {
+            // "View/Edit" mode
+            setTitle(getString(R.string.title_edit_ride));
+            populateFields();
+        }
+        else {
+            // "Add" mode
+            setTitle(getString(R.string.title_add_ride));
+        }
+    }
+
+    private void findViewsById() {
+        date = (EditText) findViewById(R.id.text_date);
+        time = (EditText) findViewById(R.id.text_time);
+        distance = (EditText) findViewById(R.id.text_distance);
+        averageSpeed = (EditText) findViewById(R.id.text_average_speed);
+        averageCadence = (EditText) findViewById(R.id.text_average_cadence);
+        comment = (EditText) findViewById(R.id.text_comment);
+    }
+
+    private void preparePickers() {
         Calendar newCalendar = Calendar.getInstance();
         datePickerDialog = new DatePickerDialog(this,
                 new DatePickerDialog.OnDateSetListener() {
@@ -62,27 +93,22 @@ public class ViewEditRideActivity extends AppCompatActivity implements View.OnCl
                     public void onTimeSet(TimePicker view, int hourOfDay, int minute) {
                         String am_pm = hourOfDay < 12 ? "AM" : "PM";
                         int displayHour = hourOfDay < 12 ? hourOfDay : hourOfDay - 12;
-                        time.setText(displayHour + ":" + minute + " " + am_pm);
+                        time.setText(String.format("%d:%02d %s", displayHour, minute, am_pm));
                     }
                 },
                 newCalendar.get(Calendar.HOUR_OF_DAY),
                 newCalendar.get(Calendar.MINUTE),
                 false);
-
-        Intent i = getIntent();
-        ride = (Ride) i.getSerializableExtra("ride");
-
-        // if existing ride was clicked, populate fields with its data to be viewed/edited,
-        // otherwise fields will be empty to define a new ride to be added to the list
-        if (ride != null) {
-            populateFields();
-        }
     }
 
     private void populateFields() {
         Date rideDateTime = ride.getDate();
         date.setText(dateFormatter.format(rideDateTime));
         time.setText(timeFormatter.format(rideDateTime));
+        distance.setText(String.valueOf(ride.getDistance()));
+        averageSpeed.setText(String.valueOf(ride.getAverageSpeed()));
+        averageCadence.setText(String.valueOf(ride.getAverageCadence()));
+        comment.setText(ride.getComment());
     }
 
     @Override
