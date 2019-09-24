@@ -8,8 +8,10 @@ import android.app.TimePickerDialog;
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
+import android.widget.Button;
 import android.widget.DatePicker;
 import android.widget.EditText;
+import android.widget.TextView;
 import android.widget.TimePicker;
 
 import java.text.SimpleDateFormat;
@@ -18,12 +20,15 @@ import java.util.Date;
 
 public class ViewEditRideActivity extends AppCompatActivity implements View.OnClickListener {
 
-    private EditText date;
-    private EditText time;
+    private TextView date;
+    private TextView time;
+
     private EditText distance;
     private EditText averageSpeed;
     private EditText averageCadence;
     private EditText comment;
+
+    private Button save;
 
     private DatePickerDialog datePickerDialog;
     private TimePickerDialog timePickerDialog;
@@ -46,6 +51,7 @@ public class ViewEditRideActivity extends AppCompatActivity implements View.OnCl
 
         date.setOnClickListener(this);
         time.setOnClickListener(this);
+        save.setOnClickListener(this);
 
         Intent i = getIntent();
         ride = (Ride) i.getSerializableExtra("ride");
@@ -64,12 +70,13 @@ public class ViewEditRideActivity extends AppCompatActivity implements View.OnCl
     }
 
     private void findViewsById() {
-        date = (EditText) findViewById(R.id.text_date);
-        time = (EditText) findViewById(R.id.text_time);
+        date = (TextView) findViewById(R.id.text_date);
+        time = (TextView) findViewById(R.id.text_time);
         distance = (EditText) findViewById(R.id.text_distance);
         averageSpeed = (EditText) findViewById(R.id.text_average_speed);
         averageCadence = (EditText) findViewById(R.id.text_average_cadence);
         comment = (EditText) findViewById(R.id.text_comment);
+        save = (Button) findViewById(R.id.button_save);
     }
 
     private void preparePickers() {
@@ -81,6 +88,7 @@ public class ViewEditRideActivity extends AppCompatActivity implements View.OnCl
                         Calendar newDate = Calendar.getInstance();
                         newDate.set(year, monthOfYear, dayOfMonth);
                         date.setText(dateFormatter.format(newDate.getTime()));
+                        date.setError(null);
                     }
 
                 },
@@ -94,6 +102,7 @@ public class ViewEditRideActivity extends AppCompatActivity implements View.OnCl
                         String am_pm = hourOfDay < 12 ? "AM" : "PM";
                         int displayHour = hourOfDay < 12 ? hourOfDay : hourOfDay - 12;
                         time.setText(String.format("%d:%02d %s", displayHour, minute, am_pm));
+                        time.setError(null);
                     }
                 },
                 newCalendar.get(Calendar.HOUR_OF_DAY),
@@ -119,5 +128,45 @@ public class ViewEditRideActivity extends AppCompatActivity implements View.OnCl
         else if (view == time) {
             timePickerDialog.show();
         }
+        else if (view == save) {
+            if (validate()) {
+                save();
+            }
+        }
+    }
+
+    private boolean validate() {
+        boolean isValid = true;
+
+        if (date.getText().toString().trim().isEmpty()) {
+            date.setError(getString(R.string.error_required_field));
+            isValid = false;
+        }
+
+        if (time.getText().toString().trim().isEmpty()) {
+            time.setError(getString(R.string.error_required_field));
+            isValid = false;
+        }
+
+        if (distance.getText().toString().trim().isEmpty()) {
+            distance.setError(getString(R.string.error_required_field));
+            isValid = false;
+        }
+
+        if (averageSpeed.getText().toString().trim().isEmpty()) {
+            averageSpeed.setError(getString(R.string.error_required_field));
+            isValid = false;
+        }
+
+        if (averageCadence.getText().toString().trim().isEmpty()) {
+            averageCadence.setError(getString(R.string.error_required_field));
+            isValid = false;
+        }
+
+        return isValid;
+    }
+
+    private void save() {
+        comment.setText("saved");
     }
 }
