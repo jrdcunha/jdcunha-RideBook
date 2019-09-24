@@ -18,31 +18,17 @@ import java.util.Date;
 public class RideListActivity extends AppCompatActivity {
     // list of rides
     ListView rideListView;
-    ArrayList rideList = new ArrayList<Ride>();
+    static ArrayList rideList = new ArrayList<Ride>();
+    RideArrayAdapter adapter;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_list);
 
-        rideList.add(new Ride(
-                new Date(),
-                1.0,
-                1.0,
-                1,
-                "test"
-        ));
-        rideList.add(new Ride(
-                new Date(),
-                2.0,
-                2.0,
-                2,
-                "test2"
-        ));
-
         rideListView = (ListView) findViewById(R.id.ride_list);
 
-        RideArrayAdapter adapter = new RideArrayAdapter(
+        adapter = new RideArrayAdapter(
                 this,
                 R.id.ride_summary,
                 rideList
@@ -81,5 +67,32 @@ public class RideListActivity extends AppCompatActivity {
             default:
                 return super.onOptionsItemSelected(item);
         }
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+
+        Intent i = getIntent();
+        Bundle b = i.getExtras();
+
+        if (b != null) {
+            if (b.containsKey("ride")) {
+                Ride ride = (Ride) i.getSerializableExtra("ride");
+
+                if (b.containsKey("position")) {
+                    // ride was edited
+                    int position = (int) i.getSerializableExtra("position");
+                    rideList.set(position, ride);
+                }
+                else {
+                    // ride was added
+                    rideList.add(ride);
+                }
+
+                adapter.notifyDataSetChanged();
+            }
+        }
+
     }
 }

@@ -14,9 +14,11 @@ import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.TimePicker;
 
+import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.Locale;
 
 public class ViewEditRideActivity extends AppCompatActivity implements View.OnClickListener {
 
@@ -37,6 +39,7 @@ public class ViewEditRideActivity extends AppCompatActivity implements View.OnCl
     private SimpleDateFormat timeFormatter;
 
     private Ride ride;
+    private int position;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -54,7 +57,16 @@ public class ViewEditRideActivity extends AppCompatActivity implements View.OnCl
         save.setOnClickListener(this);
 
         Intent i = getIntent();
-        ride = (Ride) i.getSerializableExtra("ride");
+        Bundle b = i.getExtras();
+
+        if (b != null) {
+            if (b.containsKey("ride")) {
+                ride = (Ride) i.getSerializableExtra("ride");
+            }
+            if (b.containsKey("position")) {
+                position = (int) i.getSerializableExtra("position");
+            }
+        }
 
         // if existing ride was clicked, populate fields with its data to be viewed/edited,
         // otherwise fields will be empty to define a new ride to be added to the list
@@ -81,6 +93,7 @@ public class ViewEditRideActivity extends AppCompatActivity implements View.OnCl
 
     private void preparePickers() {
         Calendar newCalendar = Calendar.getInstance();
+
         datePickerDialog = new DatePickerDialog(this,
                 new DatePickerDialog.OnDateSetListener() {
 
@@ -95,12 +108,24 @@ public class ViewEditRideActivity extends AppCompatActivity implements View.OnCl
                 newCalendar.get(Calendar.YEAR),
                 newCalendar.get(Calendar.MONTH),
                 newCalendar.get(Calendar.DAY_OF_MONTH));
+
         timePickerDialog = new TimePickerDialog(this,
                 new TimePickerDialog.OnTimeSetListener() {
                     @Override
                     public void onTimeSet(TimePicker view, int hourOfDay, int minute) {
                         String am_pm = hourOfDay < 12 ? "AM" : "PM";
-                        int displayHour = hourOfDay < 12 ? hourOfDay : hourOfDay - 12;
+                        int displayHour;
+
+                        if (hourOfDay == 0) {
+                            displayHour = 12;
+                        }
+                        else if (hourOfDay > 12) {
+                            displayHour = hourOfDay - 12;
+                        }
+                        else {
+                            displayHour = hourOfDay;
+                        }
+
                         time.setText(String.format("%d:%02d %s", displayHour, minute, am_pm));
                         time.setError(null);
                     }
@@ -167,6 +192,55 @@ public class ViewEditRideActivity extends AppCompatActivity implements View.OnCl
     }
 
     private void save() {
-        comment.setText("saved");
+        Intent i = new Intent(ViewEditRideActivity.this, RideListActivity.class);
+
+        if (ride != null) {
+            // in "View/Edit" mode, so overwrite existing ride's data
+            SimpleDateFormat dateTimeFormatter = new SimpleDateFormat("yyyy-MM-dd h:mm aa");
+            try {
+                Date newDateTime = dateTimeFormatter.parse(String.format(
+                        "%s %s",
+                        date.getText().toString(),
+                        time.getText().toString()
+                ));
+
+                ride.setDate(newDateTime);
+            }
+            catch(ParseException pe) {
+                // to make the IDE stop complaining about possible unparseable date string
+            }
+
+            ride.setDistance(Double.parseDouble(distance.getText().toString()));
+            ride.setAverageSpeed(Double.parseDouble(averageSpeed.getText().toString()));
+            ride.setAverageCadence(Integer.parseInt(averageCadence.getText().toString()));
+            ride.setComment(comment.getText().toString());
+
+            i.putExtra("position", position);
+        }
+        else {
+            // in "Add" mode, so create new ride
+            SimpleDateFormat dateTimeFormatter = new SimpleDateFormat("yyyy-MM-dd h:mm aa");
+            try {
+                Date newDateTime = dateTimeFormatter.parse(String.format(
+                        "%s %s",
+                        date.getText().toString(),
+                        time.getText().toString()
+                ));
+
+                ride = new Ride(
+                        newDateTime,
+                        Double.parseDouble(distance.getText().toString()),
+                        Double.parseDouble(averageSpeed.getText().toString()),
+                        Integer.parseInt(averageCadence.getText().toString()),
+                        comment.getText().toString()
+                );
+            }
+            catch(ParseException pe) {
+                // to make the IDE stop complaining about possible unparseable date string
+            }
+        }
+
+        i.putExtra("ride", ride);
+        startActivity(i);
     }
 }
