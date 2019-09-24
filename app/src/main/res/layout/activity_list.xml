@@ -8,8 +8,21 @@
 
     <ListView
         android:id="@+id/ride_list"
-        android:layout_width="fill_parent"
-        android:layout_height="wrap_content">
-    </ListView>
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        app:layout_constraintTop_toTopOf="parent"
+        tools:layout_editor_absoluteX="0dp"></ListView>
+
+    <TextView
+        android:id="@+id/text_total"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_margin="16dp"
+        android:textSize="15sp"
+        android:textColor="@color/colorNote"
+        android:text=""
+        android:gravity="center"
+        app:layout_constraintTop_toBottomOf="@+id/ride_list"
+        tools:layout_editor_absoluteX="142dp" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

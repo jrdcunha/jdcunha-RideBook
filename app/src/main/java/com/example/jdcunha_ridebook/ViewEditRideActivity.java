@@ -47,7 +47,7 @@ public class ViewEditRideActivity extends AppCompatActivity implements View.OnCl
         setContentView(R.layout.activity_view_edit_ride);
 
         dateFormatter = new SimpleDateFormat("yyyy-MM-dd");
-        timeFormatter = new SimpleDateFormat("h:mm aa");
+        timeFormatter = new SimpleDateFormat("HH:mm");
 
         findViewsById();
         preparePickers();
@@ -113,26 +113,13 @@ public class ViewEditRideActivity extends AppCompatActivity implements View.OnCl
                 new TimePickerDialog.OnTimeSetListener() {
                     @Override
                     public void onTimeSet(TimePicker view, int hourOfDay, int minute) {
-                        String am_pm = hourOfDay < 12 ? "AM" : "PM";
-                        int displayHour;
-
-                        if (hourOfDay == 0) {
-                            displayHour = 12;
-                        }
-                        else if (hourOfDay > 12) {
-                            displayHour = hourOfDay - 12;
-                        }
-                        else {
-                            displayHour = hourOfDay;
-                        }
-
-                        time.setText(String.format("%d:%02d %s", displayHour, minute, am_pm));
+                        time.setText(String.format("%02d:%02d", hourOfDay, minute));
                         time.setError(null);
                     }
                 },
                 newCalendar.get(Calendar.HOUR_OF_DAY),
                 newCalendar.get(Calendar.MINUTE),
-                false);
+                true);
     }
 
     private void populateFields() {
@@ -196,7 +183,7 @@ public class ViewEditRideActivity extends AppCompatActivity implements View.OnCl
 
         if (ride != null) {
             // in "View/Edit" mode, so overwrite existing ride's data
-            SimpleDateFormat dateTimeFormatter = new SimpleDateFormat("yyyy-MM-dd h:mm aa");
+            SimpleDateFormat dateTimeFormatter = new SimpleDateFormat("yyyy-MM-dd HH:mm");
             try {
                 Date newDateTime = dateTimeFormatter.parse(String.format(
                         "%s %s",
@@ -219,7 +206,7 @@ public class ViewEditRideActivity extends AppCompatActivity implements View.OnCl
         }
         else {
             // in "Add" mode, so create new ride
-            SimpleDateFormat dateTimeFormatter = new SimpleDateFormat("yyyy-MM-dd h:mm aa");
+            SimpleDateFormat dateTimeFormatter = new SimpleDateFormat("yyyy-MM-dd HH:mm");
             try {
                 Date newDateTime = dateTimeFormatter.parse(String.format(
                         "%s %s",

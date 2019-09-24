@@ -11,4 +11,5 @@
     <string name="ride_average_cadence">Average cadence (rpm)</string>
     <string name="ride_comment">Comment</string>
     <string name="error_required_field">This field is required.</string>
+    <string name="list_empty">No rides to show</string>
 </resources>

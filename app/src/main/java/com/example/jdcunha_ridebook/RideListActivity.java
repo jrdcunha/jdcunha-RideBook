@@ -11,14 +11,15 @@ import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
+import android.widget.TextView;
 
 import java.util.ArrayList;
 import java.util.Date;
 
 public class RideListActivity extends AppCompatActivity {
-    // list of rides
     ListView rideListView;
-    static ArrayList rideList = new ArrayList<Ride>();
+    TextView total;
+    static ArrayList<Ride> rideList = new ArrayList<Ride>();
     RideArrayAdapter adapter;
 
     @Override
@@ -27,6 +28,14 @@ public class RideListActivity extends AppCompatActivity {
         setContentView(R.layout.activity_list);
 
         rideListView = (ListView) findViewById(R.id.ride_list);
+        total = (TextView) findViewById(R.id.text_total);
+
+        if (rideList.size() > 0) {
+            total.setText(getTotalRideDistanceString());
+        }
+        else {
+            total.setText(getString(R.string.list_empty));
+        }
 
         adapter = new RideArrayAdapter(
                 this,
@@ -90,9 +99,23 @@ public class RideListActivity extends AppCompatActivity {
                     rideList.add(ride);
                 }
 
+                total.setText(getTotalRideDistanceString());
                 adapter.notifyDataSetChanged();
             }
+
+            // clear data passed from view/edit activity to ensure ride is only added once
+            i.replaceExtras(new Bundle());
         }
 
+    }
+
+    private String getTotalRideDistanceString() {
+        double total = 0;
+
+        for (Ride r : rideList) {
+            total += r.getDistance();
+        }
+
+        return total + " km total";
     }
 }
