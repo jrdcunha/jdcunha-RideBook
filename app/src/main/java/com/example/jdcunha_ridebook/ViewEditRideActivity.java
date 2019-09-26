@@ -31,6 +31,7 @@ public class ViewEditRideActivity extends AppCompatActivity implements View.OnCl
     private EditText comment;
 
     private Button save;
+    private Button delete;
 
     private DatePickerDialog datePickerDialog;
     private TimePickerDialog timePickerDialog;
@@ -55,6 +56,7 @@ public class ViewEditRideActivity extends AppCompatActivity implements View.OnCl
         date.setOnClickListener(this);
         time.setOnClickListener(this);
         save.setOnClickListener(this);
+        delete.setOnClickListener(this);
 
         Intent i = getIntent();
         Bundle b = i.getExtras();
@@ -74,6 +76,7 @@ public class ViewEditRideActivity extends AppCompatActivity implements View.OnCl
             // "View/Edit" mode
             setTitle(getString(R.string.title_edit_ride));
             populateFields();
+            delete.setVisibility(View.VISIBLE);
         }
         else {
             // "Add" mode
@@ -89,6 +92,7 @@ public class ViewEditRideActivity extends AppCompatActivity implements View.OnCl
         averageCadence = (EditText) findViewById(R.id.text_average_cadence);
         comment = (EditText) findViewById(R.id.text_comment);
         save = (Button) findViewById(R.id.button_save);
+        delete = (Button) findViewById(R.id.button_delete);
     }
 
     private void preparePickers() {
@@ -144,6 +148,9 @@ public class ViewEditRideActivity extends AppCompatActivity implements View.OnCl
             if (validate()) {
                 save();
             }
+        }
+        else if (view == delete) {
+            delete();
         }
     }
 
@@ -202,7 +209,8 @@ public class ViewEditRideActivity extends AppCompatActivity implements View.OnCl
             ride.setAverageCadence(Integer.parseInt(averageCadence.getText().toString()));
             ride.setComment(comment.getText().toString());
 
-            i.putExtra("position", position);
+            RideListActivity.rideList.set(position, ride);
+//            i.putExtra("position", position);
         }
         else {
             // in "Add" mode, so create new ride
@@ -225,9 +233,17 @@ public class ViewEditRideActivity extends AppCompatActivity implements View.OnCl
             catch(ParseException pe) {
                 // to make the IDE stop complaining about possible unparseable date string
             }
+
+            RideListActivity.rideList.add(ride);
         }
 
-        i.putExtra("ride", ride);
+//        i.putExtra("ride", ride);
+        startActivity(i);
+    }
+
+    private void delete() {
+        RideListActivity.rideList.remove(position);
+        Intent i = new Intent(ViewEditRideActivity.this, RideListActivity.class);
         startActivity(i);
     }
 }

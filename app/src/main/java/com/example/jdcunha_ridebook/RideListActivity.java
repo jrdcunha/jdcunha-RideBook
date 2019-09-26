@@ -17,10 +17,10 @@ import java.util.ArrayList;
 import java.util.Date;
 
 public class RideListActivity extends AppCompatActivity {
-    ListView rideListView;
-    TextView total;
+    private ListView rideListView;
+    private TextView total;
     static ArrayList<Ride> rideList = new ArrayList<Ride>();
-    RideArrayAdapter adapter;
+    private RideArrayAdapter adapter;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -30,12 +30,7 @@ public class RideListActivity extends AppCompatActivity {
         rideListView = (ListView) findViewById(R.id.ride_list);
         total = (TextView) findViewById(R.id.text_total);
 
-        if (rideList.size() > 0) {
-            total.setText(getTotalRideDistanceString());
-        }
-        else {
-            total.setText(getString(R.string.list_empty));
-        }
+        setTotalRideDistanceText();
 
         adapter = new RideArrayAdapter(
                 this,
@@ -82,40 +77,50 @@ public class RideListActivity extends AppCompatActivity {
     public void onResume() {
         super.onResume();
 
-        Intent i = getIntent();
-        Bundle b = i.getExtras();
-
-        if (b != null) {
-            if (b.containsKey("ride")) {
-                Ride ride = (Ride) i.getSerializableExtra("ride");
-
-                if (b.containsKey("position")) {
-                    // ride was edited
-                    int position = (int) i.getSerializableExtra("position");
-                    rideList.set(position, ride);
-                }
-                else {
-                    // ride was added
-                    rideList.add(ride);
-                }
-
-                total.setText(getTotalRideDistanceString());
-                adapter.notifyDataSetChanged();
-            }
-
-            // clear data passed from view/edit activity to ensure ride is only added once
-            i.replaceExtras(new Bundle());
-        }
-
+//        Intent i = getIntent();
+//        Bundle b = i.getExtras();
+//
+//        if (b != null) {
+//            if (b.containsKey("ride")) {
+//                Ride ride = (Ride) i.getSerializableExtra("ride");
+//
+//                if (b.containsKey("position")) {
+//                    // ride was edited
+//                    int position = (int) i.getSerializableExtra("position");
+//                    rideList.set(position, ride);
+//                }
+//                else {
+//                    // ride was added
+//                    rideList.add(ride);
+//                }
+//
+//                setTotalRideDistanceText();
+//                adapter.notifyDataSetChanged();
+//            }
+//
+//            // clear data passed from view/edit activity to ensure ride is only added once
+//            i.replaceExtras(new Bundle());
+//        }
+        adapter.notifyDataSetChanged();
     }
 
-    private String getTotalRideDistanceString() {
-        double total = 0;
+    private void setTotalRideDistanceText() {
+        if (rideList.size() > 0) {
+            // list contains at least one ride so sum the distance of each
+            double totalDistance = 0;
 
-        for (Ride r : rideList) {
-            total += r.getDistance();
+            for (Ride r : rideList) {
+                totalDistance += r.getDistance();
+            }
+
+            String text = totalDistance + " km total";
+
+            total.setText(text);
+
+            return;
         }
 
-        return total + " km total";
+        // no rides in list yet
+        total.setText(getString(R.string.list_empty));
     }
 }
