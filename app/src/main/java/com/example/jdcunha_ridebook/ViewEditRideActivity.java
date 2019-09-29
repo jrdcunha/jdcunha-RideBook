@@ -18,8 +18,10 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
-import java.util.Locale;
 
+/**
+ * Allows details of a ride to be defined and maintained.
+ */
 public class ViewEditRideActivity extends AppCompatActivity implements View.OnClickListener {
 
     private TextView date;
@@ -31,7 +33,6 @@ public class ViewEditRideActivity extends AppCompatActivity implements View.OnCl
     private EditText comment;
 
     private Button save;
-    private Button delete;
 
     private DatePickerDialog datePickerDialog;
     private TimePickerDialog timePickerDialog;
@@ -47,20 +48,25 @@ public class ViewEditRideActivity extends AppCompatActivity implements View.OnCl
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_view_edit_ride);
 
+        // format for date and time
         dateFormatter = new SimpleDateFormat("yyyy-MM-dd");
         timeFormatter = new SimpleDateFormat("HH:mm");
 
+        // set view references
         findViewsById();
+
+        // initialize date and time pickers
         preparePickers();
 
+        // set on-click listeners for pickers and save button
         date.setOnClickListener(this);
         time.setOnClickListener(this);
         save.setOnClickListener(this);
-        delete.setOnClickListener(this);
 
         Intent i = getIntent();
         Bundle b = i.getExtras();
 
+        // set references if Ride object and its position in the list were passed into this activity
         if (b != null) {
             if (b.containsKey("ride")) {
                 ride = (Ride) i.getSerializableExtra("ride");
@@ -76,7 +82,6 @@ public class ViewEditRideActivity extends AppCompatActivity implements View.OnCl
             // "View/Edit" mode
             setTitle(getString(R.string.title_edit_ride));
             populateFields();
-            delete.setVisibility(View.VISIBLE);
         }
         else {
             // "Add" mode
@@ -84,6 +89,9 @@ public class ViewEditRideActivity extends AppCompatActivity implements View.OnCl
         }
     }
 
+    /**
+     * Set references to each view in the activity.
+     */
     private void findViewsById() {
         date = (TextView) findViewById(R.id.text_date);
         time = (TextView) findViewById(R.id.text_time);
@@ -92,19 +100,24 @@ public class ViewEditRideActivity extends AppCompatActivity implements View.OnCl
         averageCadence = (EditText) findViewById(R.id.text_average_cadence);
         comment = (EditText) findViewById(R.id.text_comment);
         save = (Button) findViewById(R.id.button_save);
-        delete = (Button) findViewById(R.id.button_delete);
     }
 
+    /**
+     * Set up the date picker and time picker to be used to set the date and time fields.
+     */
     private void preparePickers() {
         Calendar newCalendar = Calendar.getInstance();
 
+        // initialize date picker dialog fragment
         datePickerDialog = new DatePickerDialog(this,
                 new DatePickerDialog.OnDateSetListener() {
 
                     public void onDateSet(DatePicker view, int year, int monthOfYear, int dayOfMonth) {
                         Calendar newDate = Calendar.getInstance();
                         newDate.set(year, monthOfYear, dayOfMonth);
+                        // on confirm, date field is populated with chosen date
                         date.setText(dateFormatter.format(newDate.getTime()));
+                        // date is mandatory and has been entered, so remove error state if any
                         date.setError(null);
                     }
 
@@ -113,11 +126,14 @@ public class ViewEditRideActivity extends AppCompatActivity implements View.OnCl
                 newCalendar.get(Calendar.MONTH),
                 newCalendar.get(Calendar.DAY_OF_MONTH));
 
+        // initialize time picker dialog fragment
         timePickerDialog = new TimePickerDialog(this,
                 new TimePickerDialog.OnTimeSetListener() {
                     @Override
                     public void onTimeSet(TimePicker view, int hourOfDay, int minute) {
+                        // on confirm, time field is populated with chosen date
                         time.setText(String.format("%02d:%02d", hourOfDay, minute));
+                        // time is mandatory and has been entered, so remove error state if any
                         time.setError(null);
                     }
                 },
@@ -126,6 +142,9 @@ public class ViewEditRideActivity extends AppCompatActivity implements View.OnCl
                 true);
     }
 
+    /**
+     * Populates each field with data from the Ride object passed into this activity.
+     */
     private void populateFields() {
         Date rideDateTime = ride.getDate();
         date.setText(dateFormatter.format(rideDateTime));
@@ -145,17 +164,21 @@ public class ViewEditRideActivity extends AppCompatActivity implements View.OnCl
             timePickerDialog.show();
         }
         else if (view == save) {
+            // on save button click, ensure all data is valid before allowing a save
             if (validate()) {
                 save();
             }
         }
-        else if (view == delete) {
-            delete();
-        }
     }
 
+    /**
+     * Determines if all fields contain valid data.
+     */
     private boolean validate() {
         boolean isValid = true;
+
+        // date, time, distance, average speed, and average cadence are mandatory - if at least
+        // one of them is empty, validation fails
 
         if (date.getText().toString().trim().isEmpty()) {
             date.setError(getString(R.string.error_required_field));
@@ -185,6 +208,10 @@ public class ViewEditRideActivity extends AppCompatActivity implements View.OnCl
         return isValid;
     }
 
+    /**
+     * Creates a new Ride object or updates an existing Ride object and passes it back to the
+     * list activity.
+     */
     private void save() {
         Intent i = new Intent(ViewEditRideActivity.this, RideListActivity.class);
 
@@ -209,8 +236,9 @@ public class ViewEditRideActivity extends AppCompatActivity implements View.OnCl
             ride.setAverageCadence(Integer.parseInt(averageCadence.getText().toString()));
             ride.setComment(comment.getText().toString());
 
-            RideListActivity.rideList.set(position, ride);
-//            i.putExtra("position", position);
+            // send position back to list activity so it knows which Ride object in the list to
+            // update
+            i.putExtra("position", position);
         }
         else {
             // in "Add" mode, so create new ride
@@ -233,17 +261,11 @@ public class ViewEditRideActivity extends AppCompatActivity implements View.OnCl
             catch(ParseException pe) {
                 // to make the IDE stop complaining about possible unparseable date string
             }
-
-            RideListActivity.rideList.add(ride);
         }
 
-//        i.putExtra("ride", ride);
-        startActivity(i);
-    }
-
-    private void delete() {
-        RideListActivity.rideList.remove(position);
-        Intent i = new Intent(ViewEditRideActivity.this, RideListActivity.class);
+        i.putExtra("ride", ride);
+        // prevent user from using device back button to return to this activity
+        finish();
         startActivity(i);
     }
 }
